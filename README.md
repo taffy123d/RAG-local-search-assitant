@@ -150,22 +150,4 @@ streamlit run app_file_uploader.py
 | `chat_model_name` | `deepseek-reasoner` | 对话大模型名称 |
 | `search_kwargs` | `1` | 检索返回的文档片段数量 |
 
----
 
-## 📝 依赖清单
-
-```toml
-[project]
-dependencies = [
-    "dashscope>=1.25.16",
-    "langchain>=1.2.15",
-    "langchain-chroma>=1.1.0",
-    "langchain-community>=0.4.1",
-    "langchain-core>=1.2.28",
-    "langchain-deepseek>=1.0.1",
-    "protobuf<=3.20.3",
-    "streamlit>=1.56.0",
-]
-```
-
----
