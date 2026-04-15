@@ -53,8 +53,8 @@
 ### 1. 克隆仓库
 
 ```bash
-git clone <your-repo-url>
-cd RAG-project
+git clone https://github.com/taffy123d/RAG-local-search-assitant
+cd <项目目录>
 ```
 
 ### 2. 安装依赖
@@ -72,11 +72,6 @@ pip install uv
 uv sync
 ```
 
-或直接使用 pip：
-
-```bash
-pip install -r pyproject.toml
-```
 
 ### 3. 配置环境变量
 
@@ -84,9 +79,11 @@ pip install -r pyproject.toml
 
 ```env
 DASHSCOPE_API_KEY=your_dashscope_api_key_here
-# 如果使用的 DeepSeek 模型需要独立 Key，也请补充
-# DEEPSEEK_API_KEY=your_deepseek_api_key_here
+
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
 ```
+
+
 
 > 💡 **获取 API Key**
 > - DashScope API Key：[阿里云百炼控制台](https://bailian.console.aliyun.com/)
