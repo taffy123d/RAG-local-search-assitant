@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知识库上传 - RAG</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">🤖 RAG 智能客服</div>
+            <nav class="nav-links">
+                <a href="/" class="nav-link">💬 智能客服</a>
+            </nav>
+        </aside>
+        <main class="upload-main">
+            <h1>📚 知识库上传</h1>
+            <div class="upload-area" id="upload-area">
+                <input type="file" id="file-input" accept=".txt" hidden>
+                <div class="upload-placeholder" onclick="document.getElementById('file-input').click()">
+                    <div class="upload-icon">📄</div>
+                    <p>点击选择或拖拽 txt 文件到此处</p>
+                    <p class="upload-hint">仅支持 .txt 文件，建议 UTF-8 编码</p>
+                </div>
+                <div class="file-info" id="file-info" style="display:none;">
+                    <p>文件名：<span id="file-name"></span></p>
+                    <p>大小：<span id="file-size"></span></p>
+                    <button class="upload-btn" onclick="uploadFile()">上传到知识库</button>
+                </div>
+                <div class="upload-result" id="upload-result"></div>
+            </div>
+        </main>
+    </div>
+    <script src="/static/js/upload.js"></script>
+</body>
+</html>

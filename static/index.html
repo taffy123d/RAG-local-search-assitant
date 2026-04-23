@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能客服 - RAG</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="logo">🤖 RAG 智能客服</div>
+            <button class="new-chat-btn" onclick="newChat()">+ 新建会话</button>
+            <div class="history-list">
+                <div class="history-title">历史会话</div>
+                <div class="history-items" id="history-items"></div>
+            </div>
+            <nav class="nav-links">
+                <a href="/upload" class="nav-link">📚 知识库上传</a>
+            </nav>
+            <div class="session-info">
+                <span>当前会话</span>
+                <code id="session-id"></code>
+            </div>
+        </aside>
+        <main class="chat-main">
+            <div class="chat-messages" id="chat-messages"></div>
+            <div class="chat-input-area">
+                <div class="input-wrapper">
+                    <textarea id="user-input" placeholder="请输入您的问题..." rows="1"></textarea>
+                    <button id="send-btn" onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="/static/js/chat.js"></script>
+</body>
+</html>

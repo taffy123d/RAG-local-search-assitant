@@ -9,7 +9,8 @@
 - **📚 知识库管理**：上传 TXT 文本文件，自动分割、去重并向量化存储到 Chroma 向量库
 - **💬 智能问答**：基于用户问题检索相关知识，结合大语言模型生成专业、简洁的回答
 - **🧠 多轮对话**：支持 SQLite 持久化的对话历史记忆
-- **🚀 双 Streamlit 应用**：独立的问答界面与知识库上传界面，可分别运行
+- **🔄 历史会话**：侧边栏展示所有历史会话，点击即可切换并继续对话
+- **⚡ 流式输出**：AI 回答实时逐字显示，带有加载动画
 
 ---
 
@@ -17,7 +18,9 @@
 
 | 层级 | 技术 |
 |------|------|
-| **Web 界面** | [Streamlit](https://streamlit.io/) |
+| **后端框架** | [FastAPI](https://fastapi.tiangolo.com/) |
+| **前端界面** | 原生 HTML / CSS / JavaScript |
+| **实时通信** | WebSocket |
 | **RAG 框架** | [LangChain](https://www.langchain.com/) |
 | **向量数据库** | [Chroma](https://www.trychroma.com/) |
 | **Embedding 模型** | [DashScope](https://help.aliyun.com/zh/dashscope/) `text-embedding-v4` |
@@ -32,8 +35,7 @@
 
 ```
 .
-├── app_qa.py                 # Streamlit 智能客服问答页面
-├── app_file_uploader.py      # Streamlit 知识库上传页面
+├── main.py                   # FastAPI 后端入口（API + WebSocket + 静态文件）
 ├── rag.py                    # RAG 核心服务（检索 + LLM + 对话链）
 ├── knowledge_base.py         # 知识库服务（文本分割、去重、向量存储）
 ├── vector_stores.py          # Chroma 向量库封装
@@ -41,6 +43,12 @@
 ├── sqlite_history_store.py   # SQLite 对话历史存储
 ├── file_history_store.py     # 文件形式对话历史存储（备用）
 ├── pyproject.toml            # 依赖与项目元数据
+├── static/                   # 前端静态资源
+│   ├── index.html            # 智能客服问答页
+│   ├── upload.html           # 知识库上传页
+│   ├── css/style.css         # 共享样式
+│   ├── js/chat.js            # 问答页逻辑
+│   └── js/upload.js          # 上传页逻辑
 ├── chroma_db/                # Chroma 向量数据库持久化目录
 ├── chat_history/             # 对话历史存储目录
 └── data/                     # 可放置待上传的原始数据文件
@@ -72,7 +80,6 @@ pip install uv
 uv sync
 ```
 
-
 ### 3. 配置环境变量
 
 在项目根目录创建 `.env` 文件，填入你的 API Key：
@@ -83,29 +90,20 @@ DASHSCOPE_API_KEY=your_dashscope_api_key_here
 DEEPSEEK_API_KEY=your_deepseek_api_key_here
 ```
 
-
-
 > 💡 **获取 API Key**
 > - DashScope API Key：[阿里云百炼控制台](https://bailian.console.aliyun.com/)
 > - DeepSeek API Key：[DeepSeek 开放平台](https://platform.deepseek.com/)
 
 ### 4. 启动应用
 
-#### 方式 A：启动智能客服问答页面
-
 ```bash
-streamlit run app_qa.py
+uv run uvicorn main:app --reload --port 8000
 ```
 
-默认在浏览器打开 `http://localhost:8501`
+服务启动后，在浏览器打开：
 
-#### 方式 B：启动知识库上传页面
-
-```bash
-streamlit run app_file_uploader.py
-```
-
-默认在浏览器打开 `http://localhost:8501`（若同时运行，会自动分配 8502）
+- **智能客服问答页**：`http://localhost:8000/`
+- **知识库上传页**：`http://localhost:8000/upload`
 
 ---
 
@@ -113,8 +111,8 @@ streamlit run app_file_uploader.py
 
 ### 上传知识库
 
-1. 运行 `streamlit run app_file_uploader.py`
-2. 上传 `.txt` 格式的文本文件
+1. 打开 `http://localhost:8000/upload`
+2. 点击选择或拖拽 `.txt` 格式的文本文件到上传区域
 3. 系统会自动：
    - 计算 MD5 进行去重（避免重复上传相同内容）
    - 按配置的分块策略分割文本
@@ -123,13 +121,31 @@ streamlit run app_file_uploader.py
 
 ### 智能问答
 
-1. 运行 `streamlit run app_qa.py`
-2. 在聊天框输入问题
+1. 打开 `http://localhost:8000/`
+2. 在底部输入框输入问题，按 **Enter** 发送（**Shift + Enter** 换行）
 3. 系统会：
    - 从 Chroma 中检索与问题最相关的知识片段
    - 将检索结果作为上下文注入 Prompt
    - 调用 DeepSeek 大模型生成回答
    - 自动维护多轮对话历史
+
+### 切换历史会话
+
+- 左侧边栏「历史会话」区域会列出所有有聊天记录的会话
+- 点击任意会话即可切换，自动加载该会话的全部历史消息
+- 点击「新建会话」可开始一个全新的对话
+
+---
+
+## 🔌 后端 API
+
+| 方法 | 路径 | 说明 |
+|------|------|------|
+| `WebSocket` | `/ws/chat/{session_id}` | 流式问答 |
+| `POST` | `/api/upload` | 上传 TXT 文件到知识库 |
+| `GET` | `/api/sessions` | 获取所有历史会话列表 |
+| `GET` | `/api/history/{session_id}` | 获取指定会话的历史消息 |
+| `DELETE` | `/api/history/{session_id}` | 清空指定会话的历史记录 |
 
 ---
 
@@ -146,5 +162,3 @@ streamlit run app_file_uploader.py
 | `embedding_model_name` | `text-embedding-v4` | DashScope Embedding 模型 |
 | `chat_model_name` | `deepseek-reasoner` | 对话大模型名称 |
 | `search_kwargs` | `1` | 检索返回的文档片段数量 |
-
-

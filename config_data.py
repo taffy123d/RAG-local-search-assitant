@@ -13,7 +13,6 @@ max_split_char_number = 1000 #文本分割阈值
 
 #retriever
 search_kwargs = 1
-
 embedding_model_name = 'text-embedding-v4'
 chat_model_name = 'deepseek-reasoner'
 
